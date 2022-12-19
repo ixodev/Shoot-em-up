@@ -1,7 +1,7 @@
 # Written by Curtis Newton and Younès B.
 
 try: import pygame as pg, sys, sprites
-except ImportError as err: print(f"Fatal error!!! Reason : {err}.", file=sys.stderr)
+except ImportError as err: print(f"An ImportError occured. Reason : {err}.", file=sys.stderr)
 
 pg.init()
 pg.display.init()
