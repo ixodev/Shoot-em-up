@@ -1,22 +1,25 @@
-# Written by Curtis Newton
+# Written by Curtis Newton and Younès B.
 
-try: import pygame as pg, random, sys, sprites
-except ImportError: raise SystemExit("Sorry, can´t find required libraries")
+try: import pygame as pg, sys, sprites
+except ImportError as err: print(f"An ImportError occured. Reason : {err}.", file=sys.stderr)
 
 pg.init()
+pg.display.init()
+pg.font.init()
 pg.mixer.init()
+
+
 
 class Game:
     def __init__(self) -> None:
         self.SCREENRECT = pg.Rect(0, 0, 126 * 5, 480)
-        self.GAME_STATE = False
 
         self.screen = pg.display.set_mode(self.SCREENRECT.size)
         pg.display.set_caption("Shoot´em up v2.0")
-        icon = pg.image.load("assets/alien1.png")
-        pg.display.set_icon(icon)
+        pg.display.set_icon(pg.image.load("assets/alien1.png"))
 
         self.bg = pg.image.load("assets/background.gif")
+        self.menu = Menu(self.screen)
         self.player = sprites.Player(self.SCREENRECT)
         self.enemies, self.bullets, self.explosions = [], [], []
         self.create_enemy_list()
@@ -24,27 +27,9 @@ class Game:
         self.score_font, self.credits_font = pg.font.Font(None, 30), pg.font.Font(None, 20)
 
     def draw_texts(self) -> None:
-        score = self.score_font.render(f"Score : {self.player.score}", 0, [255, 255, 255])
-        self.screen.blit(score, (10, self.SCREENRECT.height - 50))
-        credits = self.credits_font.render("Written by Curtis Newton, v2.0, inspired from the ´pygame.examples.aliens´ shooter.", 0, [255, 255, 255])
+        self.screen.blit(self.score_font.render(f"Score : {self.player.score}", 0, [255, 255, 255]), (10, self.SCREENRECT.height - 50))
+        credits = self.credits_font.render("Written by Curtis Newton and Younès B., v2.0, inspired from the 'pygame.examples.aliens' shooter.", 0, [255, 255, 255])
         self.screen.blit(credits, (5, 5))
-
-
-    def draw_menu(self) -> None:
-        big_title = self.score_font.render("Shoot´em up v2.0, by Curtis Newton", 0, [255, 255, 255])
-        big_title_rect = big_title.get_rect()
-        start_text = self.credits_font.render("Press Space Key to start", 0, [255, 255, 255])
-        start_text_rect = start_text.get_rect()
-        self.screen.blit(big_title, (self.SCREENRECT.width / 2 - big_title_rect.width / 2, 10))
-        self.screen.blit(start_text, (self.SCREENRECT.width / 2 - start_text_rect.width / 2, self.SCREENRECT.height / 2 - start_text_rect.height / 2))
-
-        for evt in pg.event.get():
-            if evt.type == pg.KEYDOWN and evt.key == pg.K_ESCAPE:
-                pg.quit()
-                break
-                quit()
-            elif evt.type == pg.KEYDOWN and evt.key == pg.K_SPACE: self.GAME_STATE = True
-
 
     def create_enemy_list(self) -> None:
         for i in range(5): self.enemies.append(sprites.Enemy(self.SCREENRECT))
@@ -97,7 +82,7 @@ class Game:
         while True:
             self.draw_background()
 
-            if not self.GAME_STATE: self.draw_menu()
+            if not self.menu.GAME_STATE: self.menu.update()
 
             else:
                 self.player.handle_inputs()
@@ -115,12 +100,42 @@ class Game:
                 except IndexError: continue
 
                 for evt in pg.event.get():
-                    if evt.type == pg.QUIT or evt.type == pg.KEYDOWN and evt.key == pg.K_ESCAPE: self.GAME_STATE = False
+                    if evt.type == pg.QUIT or evt.type == pg.KEYDOWN and evt.key == pg.K_ESCAPE: self.menu.GAME_STATE = False
                     if evt.type == pg.KEYDOWN and evt.key == pg.K_SPACE: self.bullets.append(sprites.Bullet(self.player.rect))
 
                 clock.tick(25)
 
             pg.display.flip()
+
+
+
+
+class Menu:
+    def __init__(self, screen: pg.Surface) -> None:
+        self.GAME_STATE = False
+        self.screen = screen
+        self.font = pg.font.Font(None, 36)
+        self.button = pg.Rect(self.screen.get_width() / 2 - 30, self.screen.get_height() / 2 - 15, 60, 30)
+        self.title = self.font.render("Shoot'em up v2.0, written by Y.B. and C.N.", 0, pg.Color("white"))
+        self.buttontext = self.font.render("Play!", 0, pg.Color("black"))
+
+    def update(self) -> None:
+        self.screen.blit(self.title, (self.screen.get_width() / 2 - self.title.get_width() / 2, 50))
+        pg.draw.rect(self.screen, pg.Color("yellow"), self.button)
+        self.screen.blit(self.buttontext, self.button)
+
+        pg.display.flip()
+
+        for evt in pg.event.get():
+
+            if evt.type == pg.QUIT or evt.type == pg.KEYDOWN and evt.key == pg.K_ESCAPE:
+                pg.quit()
+                quit(0)
+
+            elif evt.type == pg.MOUSEBUTTONDOWN:
+                if self.button.collidepoint(evt.pos): self.GAME_STATE = True
+
+
 
 
 if __name__ == "__main__":

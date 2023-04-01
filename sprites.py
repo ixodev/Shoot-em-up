@@ -1,4 +1,4 @@
-# Written by Curtis Newton
+# Written by Curtis Newton and Younès B.
 
 import pygame as pg, random
 
