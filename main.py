@@ -62,12 +62,13 @@ class Game:
         for i in range(0, 5 * 126, 126): self.screen.blit(self.bg, (i, 0))
 
     def check_sprite_collisions(self) -> None:
-        bullet_index = 0
+        sprite_index = 0
         for bullet in self.bullets:
             for enemy in self.enemies:
+
                 if bullet.rect.colliderect(enemy.rect):
 
-                    try: del self.bullets[bullet_index]
+                    try: del self.bullets[sprite_index]
                     except IndexError: continue
 
                     self.create_new_explosion(enemy)
@@ -75,10 +76,10 @@ class Game:
                     self.player.score += 1
 
                 elif bullet.rect.y == 0 - bullet.rect.height:
-                    try: del self.bullets[bullet_index]
+                    try: del self.bullets[sprite_index]
                     except IndexError: continue
 
-            bullet_index += 1
+        sprite_index += 1
 
     def create_new_explosion(self, enemy: sprites.Enemy) -> None:
         explosion = sprites.Explosion(enemy.rect)

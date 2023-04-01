@@ -31,11 +31,8 @@ class Enemy:
         self.choose_randomly_direction()
 
     def choose_randomly_direction(self) -> None:
-        choice = random.randint(0, 1)
-        if choice:
-            self.direction, self.rect.x = "right", 1
-        else:
-            self.direction, self.rect.x = "left", self.screenrect.width - 1
+        if random.randint(0, 1): self.direction, self.rect.x = "right", 1
+        else: self.direction, self.rect.x = "left", self.screenrect.width - 1
 
     def move(self, direction) -> None:
         if direction == "left":
@@ -55,8 +52,7 @@ class Enemy:
         self.choose_randomly_direction()
         self.rect.y += self.rect.height
 
-    def draw_on_screen(self, surface: pg.Surface) -> None:
-        surface.blit(self.image, self.rect)
+    def draw_on_screen(self, surface: pg.Surface) -> None: surface.blit(self.image, self.rect)
 
 
 class Bullet:
@@ -65,7 +61,7 @@ class Bullet:
         self.player_rect = player_rect
         self.image = pg.image.load("assets/shot.gif")
         self.rect = self.image.get_rect()
-        self.rect.center = self.player_rect.topright
+        self.rect.center = self.player_rect.midtop
 
     def update(self) -> None: self.rect.y -= self.speed
 
